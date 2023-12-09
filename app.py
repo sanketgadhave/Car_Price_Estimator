@@ -88,7 +88,45 @@ def map_to_existing_fuel_type(user_input_fuel):
     else:
         return user_input_fuel
 
+def validate_engine_volume(input_text):
+    try:
+        value = float(input_text)
+        if 0.6 <= value <= 6.0:
+            return value
+        else:
+            st.warning("Please enter a valid engine volume.\n"
+                       "Smaller Cars: 0.6 - 2.0\n"
+                       "Mid-Range Cars: 2.5 - 3.5\n"
+                       "High-Performance or Sports Cars: 4.0 - 6.0")
+            return st.session_state.user_inputs.get('Engine_volume', 0.6)  # Default value if invalid
+    except ValueError:
+        st.warning("Please enter a valid numeric value.")
+        return st.session_state.user_inputs.get('Engine_volume', 0.6)  # Default value if invalid
 
+def validate_cylinders(input_text):
+    try:
+        value = int(input_text)
+        if value > 0 and value <= 16:  # Set the valid range for cylinders (0 exclusive, 16 inclusive)
+            return value
+        else:
+            st.warning("Please enter a valid number of cylinders between 1 and 16.")
+            return st.session_state.user_inputs.get('Cylinders', 1)  # Default value if invalid
+    except ValueError:
+        st.warning("Please enter a valid numeric value for cylinders.")
+        return st.session_state.user_inputs.get('Cylinders', 1)  # Default value if invalid
+
+
+def validate_airbags(input_text):
+    try:
+        value = int(input_text)
+        if 0 <= value <= 10:  # Set the valid range for airbags (0 to 10)
+            return value
+        else:
+            st.warning("Please enter a valid number of airbags between 0 and 10.")
+            return st.session_state.user_inputs.get('Airbags', 0)  # Default value if invalid
+    except ValueError:
+        st.warning("Please enter a valid numeric value for airbags.")
+        return st.session_state.user_inputs.get('Airbags', 0)  # Default value if invalid
 
 # Initializing session state for page navigation and user inputs
 if 'page_number' not in st.session_state:
@@ -107,7 +145,7 @@ if 'prediction_made' not in st.session_state:
 # Define pages
 def page1():
     st.header("Car Model Details")
-    st.session_state.user_inputs['Levy'] = st.number_input('Levy', min_value=0, value=st.session_state.user_inputs.get('Levy', 0))
+    st.session_state.user_inputs['Levy'] = st.number_input('Levy', min_value=0, value=st.session_state.user_inputs.get('Levy', 0), step=1)
 
     with open('meta/Manufacturers.txt', 'r') as file:
         manufacturers_list = file.readlines()
@@ -154,7 +192,8 @@ def page2():
     index = fuel_list.index(default_fuel_type)
     st.session_state.user_inputs['Fuel_type'] = st.selectbox('Fuel_type', fuel_list, index=index)
     st.session_state.user_inputs['Fuel_type'] = map_to_existing_fuel_type(st.session_state.user_inputs['Fuel_type'])
-    st.session_state.user_inputs['Engine_volume'] = st.text_input('Engine Volume', value=st.session_state.user_inputs.get( 'Engine_volume', ''))
+    user_input = st.text_input('Engine Volume', value=str(st.session_state.user_inputs.get('Engine_volume', 0.6)))
+    st.session_state.user_inputs['Engine_volume'] = validate_engine_volume(user_input)
     if 'Mileage' in st.session_state.user_inputs:
         mileage = st.session_state.user_inputs['Mileage']
     else:
@@ -162,9 +201,10 @@ def page2():
     st.session_state.user_inputs['Mileage']  = st.number_input('Mileage', min_value=0, value=mileage)
 
     if 'Cylinders' not in st.session_state.user_inputs:
-        st.session_state.user_inputs['Cylinders'] = 0
-    st.session_state.user_inputs['Cylinders'] = st.number_input('Cylinders', min_value=0, step=1, value=st.session_state.user_inputs['Cylinders'])
-    if st.session_state.user_inputs['Engine_volume'].strip() == '' or st.session_state.user_inputs['Cylinders'] == 0:
+        st.session_state.user_inputs['Cylinders'] = 1
+    user_input_cylinders = st.text_input('Cylinders', value=str(st.session_state.user_inputs.get('Cylinders', 0)))
+    st.session_state.user_inputs['Cylinders'] = validate_cylinders(user_input_cylinders)
+    if st.session_state.user_inputs['Engine_volume'] < 0.6 or not (1 <= st.session_state.user_inputs['Cylinders'] <= 16):
         st.warning("Please fill in all required fields before proceeding.")
         st.session_state.warning_displayed = True
         st.stop()
@@ -186,7 +226,8 @@ def page3():
         print("IN IFFFFFFFFF")
         st.session_state.user_inputs['Color'] = 'Red'
 
-    st.session_state.user_inputs['Airbags'] = st.number_input('Airbags', min_value=0, step=1, value=st.session_state.user_inputs.get('Airbags', 0))
+    user_input_airbags = st.text_input('Airbags', value=str(st.session_state.user_inputs.get('Airbags', 0)))
+    st.session_state.user_inputs['Airbags'] = validate_airbags(user_input_airbags)
     st.session_state.user_inputs['With_Turbo'] = st.selectbox('With Turbo', ['Yes', 'No'], index=0 if st.session_state.user_inputs.get('With_Turbo', 'Yes') == 'Yes' else 1)
 
     required_fields = ['Levy', 'Manufacturer', 'Model', 'Prod_year', 'Category', 'Leather_interior', 'Fuel_type',
@@ -254,7 +295,7 @@ def report_page():
     st.markdown("<h3 style='text-align: center;'>Factors affecting price</h3>", unsafe_allow_html=True)
     with st.expander("Price Estimation Over Different Production Years", expanded=False):
         plot_price_over_time(st.session_state.input_data_cpy, model_pred, preprocess_data)
-    with st.expander("Average Estimated Price by Fuel Type", expanded=False):
+    with st.expander("Average Estimated Price by Category", expanded=False):
         plot_category_comparison(st.session_state.input_data_cpy, model_pred, preprocess_data)
 
 # Plot function for category comparision
@@ -368,11 +409,12 @@ else:
                 processed_data = preprocess_data(input_data)
                 # Make a prediction
                 prediction = model_pred.predict(processed_data)
+                st.session_state.estimated_price = round(prediction[0])
                 # Display the prediction
                 time.sleep(4)
-                st.session_state.success_message = f'Estimated Price: ${prediction[0]}'
-                st.success(f'Estimated Price: ${prediction[0]}')
-                st.session_state.estimated_price = prediction[0]
+                st.session_state.success_message = f'Estimated Price: ${st.session_state.estimated_price}'
+                st.success(f'Estimated Price: ${st.session_state.estimated_price}')
+
                 st.session_state.input_data_cpy = input_data_cpy
                 st.session_state.prediction_made = True
                 st.experimental_rerun()
