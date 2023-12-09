@@ -417,7 +417,7 @@ else:
             if st.button('Back'):
                 st.session_state.page_number -= 1
         with col2:
-            prediction_button = st.button('Predict')
+            prediction_button = st.button('Get Estimate')
 
         with col3:
             report_button_enabled = not st.session_state.prediction_made
