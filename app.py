@@ -226,6 +226,10 @@ def page3():
         print("IN IFFFFFFFFF")
         st.session_state.user_inputs['Color'] = 'Red'
 
+    color_value = st.session_state.user_inputs['Color']
+    if color_value in color_list or color_value == 'Red':
+        st.session_state.user_inputs['Color'] = color_value
+
     user_input_airbags = st.text_input('Airbags', value=str(st.session_state.user_inputs.get('Airbags', 0)))
     st.session_state.user_inputs['Airbags'] = validate_airbags(user_input_airbags)
     st.session_state.user_inputs['With_Turbo'] = st.selectbox('With Turbo', ['Yes', 'No'], index=0 if st.session_state.user_inputs.get('With_Turbo', 'Yes') == 'Yes' else 1)
