@@ -260,8 +260,8 @@ def page3():
     st.session_state.user_inputs['With_Turbo'] = st.selectbox('With Turbo', ['Yes', 'No'], index=0 if st.session_state.user_inputs.get('With_Turbo', 'Yes') == 'Yes' else 1)
 
     required_fields = ['Levy', 'Manufacturer', 'Model', 'Prod_year', 'Category', 'Leather_interior', 'Fuel_type',
-                       'Engine_volume', 'Mileage', 'Cylinders', 'Gear_box_type', 'Drive_wheels', 'Doors', 'Wheel',
-                       'Color', 'Airbags', 'With_Turbo']
+                       'Engine_volume',  'Cylinders', 'Gear_box_type', 'Drive_wheels', 'Doors', 'Wheel',
+                       'Color', 'With_Turbo']
     for field in required_fields:
         if st.session_state.user_inputs[field] == '' or st.session_state.user_inputs[field] == 0:
             st.warning("Please fill in all required fields before making a prediction.")
@@ -343,7 +343,7 @@ def plot_category_comparison(input_data_category, model, preprocess_function):
     # Plotting
     fig, ax = plt.subplots(figsize=(13, 6))
     ax.bar(category_list, average_prices, color='skyblue')
-    ax.set_title('Average Estimated Price by Fuel Type')
+    ax.set_title('Average Estimated Price by Category')
     ax.set_xlabel('Category')
     ax.set_ylabel('Average Estimated Price')
     st.pyplot(fig)
