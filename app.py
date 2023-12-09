@@ -46,6 +46,7 @@ def transform_input(input_df_trans):
 
 def transform_input_for_prediction(input_df_trans_pred):
     # Assuming input_df is a single-row DataFrame with the same structure as the training data
+    print(input_df_trans_pred.shape)
     transformed_data = full_pipeline.transform(input_df_trans_pred)
     return transformed_data
 
