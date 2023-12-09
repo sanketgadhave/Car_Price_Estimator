@@ -341,6 +341,7 @@ win-unicode-console==0.5
 wincertstore==0.2
 wrapt @ file:///C:/Windows/Temp/abs_7c3dd407-1390-477a-b542-fd15df6a24085_diwiza/croots/recipe/wrapt_1657814452175/work
 xarray @ file:///opt/conda/conda-bld/xarray_1639166117697/work
+xgboost==2.0.2
 xlrd @ file:///tmp/build/80754af9/xlrd_1608072521494/work
 XlsxWriter @ file:///opt/conda/conda-bld/xlsxwriter_1649073856329/work
 xlwings @ file:///C:/b/abs_41rmpiyy58/croots/recipe/xlwings_1664932818417/work
