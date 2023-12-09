@@ -1,0 +1,8 @@
+Hybrid
+Petrol
+Diesel
+CNG
+Plug-in Hybrid
+LPG
+Hydrogen
+Other
