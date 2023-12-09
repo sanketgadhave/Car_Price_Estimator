@@ -147,6 +147,9 @@ def page1():
     st.header("Car Model Details")
     st.session_state.user_inputs['Levy'] = st.number_input('Levy', min_value=0, value=st.session_state.user_inputs.get('Levy', 0), step=1)
 
+    if 'other_manufacturer_input' not in st.session_state:
+        st.session_state.other_manufacturer_input = ""
+
     with open('meta/Manufacturers.txt', 'r') as file:
         manufacturers_list = file.readlines()
 
@@ -159,9 +162,16 @@ def page1():
 
     # Handling 'OTHER' selection
     if selected_manufacturer == 'OTHER':
-        entered_manufacturer = st.text_input('Enter Manufacturer:', key='OtherManufacturerInput').upper()
-        st.session_state.user_inputs['Manufacturer_Display'] = entered_manufacturer if entered_manufacturer else 'OTHER'
-        st.session_state.user_inputs['Manufacturer'] = 'BMW'
+        entered_manufacturer = st.text_input('Enter Manufacturer:', value=st.session_state.other_manufacturer_input,
+                                             key='OtherManufacturerInput').upper()
+        st.session_state.other_manufacturer_input = entered_manufacturer
+
+        if entered_manufacturer:
+            st.session_state.user_inputs['Manufacturer_Display'] = entered_manufacturer
+            st.session_state.user_inputs['Manufacturer'] = 'BMW'
+        else:
+            st.error("Please enter a Manufacturer name.")
+            return  # This will stop executing the rest of the page if no manufacturer is entered
     else:
         st.session_state.user_inputs['Manufacturer'] = selected_manufacturer
         st.session_state.user_inputs['Manufacturer_Display'] = selected_manufacturer
@@ -169,7 +179,10 @@ def page1():
     if st.session_state.user_inputs['Manufacturer'] is not None and not st.session_state.user_inputs['Manufacturer'].strip():
         st.error("Please enter a Manufacturer.")
 
+    print("Before model: ", st.session_state.user_inputs['Manufacturer'])
+
     st.session_state.user_inputs['Model'] = st.text_input('Model', value=st.session_state.user_inputs.get('Model', ''))
+    print("After model: ", st.session_state.user_inputs['Manufacturer'])
     st.session_state.user_inputs['Prod_year'] = st.slider('Production Year', min_value=1900, max_value=2023, value=st.session_state.user_inputs.get('Prod_year', 2023))
 
     with open('meta/category.txt', 'r') as file:
@@ -182,10 +195,13 @@ def page1():
     index = category_list.index(default_category)
     st.session_state.user_inputs['Category'] = st.selectbox('Category', category_list, index=index)
     st.session_state.user_inputs['Category'] = map_to_existing_category(st.session_state.user_inputs['Category'])
-    if (st.session_state.user_inputs['Manufacturer'] is not None and st.session_state.user_inputs['Manufacturer'].strip() == '') or st.session_state.user_inputs['Model'].strip() == '' or st.session_state.user_inputs['Prod_year'] == 0:
+    if (st.session_state.user_inputs['Manufacturer'] is not None and st.session_state.user_inputs[
+        'Manufacturer'].strip() == '') or \
+            st.session_state.user_inputs['Model'].strip() == '' or st.session_state.user_inputs['Prod_year'] == 0:
         st.warning("Please fill in all required fields before proceeding.")
         st.session_state.warning_displayed = True
         st.stop()
+
 
 
 def page2():
