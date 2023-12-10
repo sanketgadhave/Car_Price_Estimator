@@ -240,7 +240,7 @@ def page3():
     st.header("Additional Features")
     st.session_state.user_inputs['Gear_box_type'] = st.selectbox('Gear Box Type', ['Automatic', 'Manual', 'Tiptronic', 'Variator'], index=0 if st.session_state.user_inputs.get( 'Gear_box_type', 'Automatic') == 'Automatic' else 3)
     st.session_state.user_inputs['Drive_wheels'] = st.selectbox('Drive Wheels', ['Front', 'Rear', '4WD'], index=0 if st.session_state.user_inputs.get( 'Drive_wheels', 'Front') == 'Front' else 2)
-    st.session_state.user_inputs['Doors'] = st.selectbox('Doors', ['2', '4'], index=0 if st.session_state.user_inputs.get('Doors', '2') == '2' else 2)
+    st.session_state.user_inputs['Doors'] = st.selectbox('Doors', ['2', '4'], index=0 if st.session_state.user_inputs.get('Doors', '2') == '2' else 1)
     st.session_state.user_inputs['Wheel'] = st.selectbox('Wheel', ['Left wheel', 'Right wheel'], index=0 if st.session_state.user_inputs.get('Wheel', 'Left wheel') == 'Left wheel' else 1)
     st.session_state.user_inputs['Color'] = st.text_input('Color')
     with open('meta/colors.txt', 'r') as file:
